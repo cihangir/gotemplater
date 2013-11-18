@@ -1,10 +1,12 @@
-package main
+package gotemplater
 
 import (
 	"bytes"
 	"errors"
 	"fmt"
 	"github.com/siesta/goparser"
+	"os"
+	"path/filepath"
 	"text/template"
 )
 
