@@ -35,11 +35,6 @@ const functions = `
 {{end}}
 {{end}}`
 
-func main() {
-	file, err := goparser.ParseFile("templates/gotemplater_test.go")
-	if err != nil {
-		panic(err)
-	}
 type Options struct {
 	Exporteds, Functions, Structs bool
 }
@@ -48,9 +43,10 @@ func NewOptions() *Options {
 	return &Options{}
 }
 
-	t, err := template.New("Functions template").Funcs(fmap).Parse(functions)
-	if err != nil {
-		panic(err)
+// Generate recursively iterates over a path and generates code according to template
+func Generate(packageName string, options *Options) (string, error) {
+	if options == nil {
+		options = NewOptions()
 	}
 
 	var res string
