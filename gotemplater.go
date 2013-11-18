@@ -40,10 +40,13 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+type Options struct {
+	Exporteds, Functions, Structs bool
+}
 
-	var fmap = template.FuncMap{
-		"sequence": sequenceFunc,
-	}
+func NewOptions() *Options {
+	return &Options{}
+}
 
 	t, err := template.New("Functions template").Funcs(fmap).Parse(functions)
 	if err != nil {
