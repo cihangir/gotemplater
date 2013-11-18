@@ -50,13 +50,42 @@ func main() {
 		panic(err)
 	}
 
-	var doc bytes.Buffer
-	err = t.Execute(&doc, file)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(doc.String())
+	var res string
+	err := filepath.Walk(packageName, func(path string, info os.FileInfo, err error) error {
+		if info == nil {
+			return fmt.Errorf("File not found: %s", path)
+			// Only go file are used for generation.
+		} else if info.IsDir() || filepath.Ext(path) != ".go" {
+			return nil
+		}
 
+		file, err := goparser.ParseFile(path)
+		if err != nil {
+			return err
+		}
+
+		var fmap = template.FuncMap{
+			"sequence": sequenceFunc,
+		}
+
+		t, err := template.New("Functions template").Funcs(fmap).Parse(functions)
+		if err != nil {
+			return err
+		}
+
+		var doc bytes.Buffer
+		err = t.Execute(&doc, file)
+		if err != nil {
+			return err
+		}
+
+		res = doc.String()
+		fmt.Println(res)
+		return nil
+
+	})
+
+	return res, err
 }
 
 //http://jan.newmarch.name/go/template/chapter-template.html
